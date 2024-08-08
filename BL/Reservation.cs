@@ -44,7 +44,11 @@ namespace projMaxPark.BL
             return dbs.readReservations();
         }
 
-        //algorithm - tomorrow reservations
+        public List<Object> ReadByUserId(int userId)
+        {
+            DBservicesReservation dbs = new DBservicesReservation();
+            return dbs.readReservationsByUserId(userId);
+        }
         public List<Reservation> ReadTomorrowRes()
         {
             DBservicesReservation dbs =new DBservicesReservation();

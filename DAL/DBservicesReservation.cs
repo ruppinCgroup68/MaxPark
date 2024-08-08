@@ -114,6 +114,81 @@ namespace projMaxPark.DAL
             return cmd;
         }
 
+		//--------------------------------------------------------------------------------------------------
+        //                            R E A D - R E S E R V A T I O N S BY USER ID - G E T
+        //---------------------------------------------------------------------------------------------------
+        public List<Object> readReservationsByUserId(int userId)
+        {
+            SqlConnection con;
+            SqlCommand cmd;
+            try
+            {
+                con = connect("myProjDB");//create the connection
+            }
+            catch (Exception ex)
+            {
+                // write to log
+                throw (ex);
+            }
+
+            // helper method to build the insert string
+            // create the command
+
+            cmd = readReservasionByUserIdSP("spReadReservationByUserId", con, userId);
+            try
+            {
+                SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                List<Object> reservations = new List<Object>();
+                while (dataReader.Read())
+                {
+                    Object res = new
+                    {
+                        reservationId = dataReader["reservationId"] != DBNull.Value ? Convert.ToInt32(dataReader["reservationId"]) : (int?)null,
+                        userId = dataReader["userId"] != DBNull.Value ? Convert.ToInt32(dataReader["userId"]) : (int?)null,
+                        parkId = dataReader["parkId"] != DBNull.Value ? Convert.ToInt32(dataReader["parkId"]) : (int?)null,
+                        reservation_Date = dataReader["reservationDate"] != DBNull.Value ? Convert.ToDateTime(dataReader["reservationDate"]) : (DateTime?)null,
+                        reservation_STime = dataReader["reservation_STime"] != DBNull.Value ? dataReader["reservation_STime"].ToString() : null,
+                        reservation_ETime = dataReader["reservation_ETime"] != DBNull.Value ? dataReader["reservation_ETime"].ToString() : null,
+                        reservationStatus = dataReader["reservationStatus"] != DBNull.Value ? dataReader["reservationStatus"].ToString() : null,
+                        markId = dataReader["markId"] != DBNull.Value ? Convert.ToInt32(dataReader["markId"]) : (int?)null,
+                        parkName = dataReader["parkName"] != DBNull.Value ? dataReader["parkName"].ToString() : null,
+                        parkAddress = dataReader["parkAddress"] != DBNull.Value ? dataReader["parkAddress"].ToString() : null,
+                        markName = dataReader["markName"] != DBNull.Value ? dataReader["markName"].ToString() : null,
+                        markName_Block = dataReader["markName_Block"] != DBNull.Value ? dataReader["markName_Block"].ToString() : null,
+                        isAvailable = dataReader["isAvailable"] != DBNull.Value ? Convert.ToBoolean(dataReader["isAvailable"]) : (bool?)null
+                    };
+
+
+                    reservations.Add(res);
+                }
+                return reservations;
+            }
+            catch (Exception ex)
+            {
+                // write to log
+                throw (ex);
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    // close the db connection
+                    con.Close();
+                }
+            }
+        }
+
+        //---------------------------------------------------------------------------------------------------
+        private SqlCommand readReservasionByUserIdSP(String spName, SqlConnection con, int userId)
+        {
+            SqlCommand cmd = new SqlCommand();// create the command object-
+            cmd.Connection = con;// assign the connection to the command object
+            cmd.CommandText = spName;// can be Select, Insert, Update, Delete 
+            cmd.CommandTimeout = 10;// Time to wait for the execution' The default is 30 seconds
+            cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+            cmd.Parameters.AddWithValue("@userId", userId);
+            return cmd;
+        }
         //--------------------------------------------------------------------------------------------------------------------------------------//
         //                                  R E A D - T O M O R R O W S  :  R E S E R V A T I O N 
         //-------------------------------------------------------------------------------------------------------------------------------------//

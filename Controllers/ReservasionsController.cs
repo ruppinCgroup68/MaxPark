@@ -18,6 +18,14 @@ namespace MaxPark.Controllers
             return res.Read();
         }
 
+        [HttpGet("readReservations/{userId}")]// קריאה לכל ההזמנות שך המשתמש 
+        public IEnumerable<Object> Get(int userId)
+        {
+            Reservation res = new Reservation();
+            return res.ReadByUserId(userId);
+        }
+
+
         //Read tomorrow Reservation List 
         [HttpGet("tomorrowReservasions")]
         public IEnumerable<Reservation> GetTomorrowReservations()

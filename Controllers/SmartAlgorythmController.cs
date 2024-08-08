@@ -2,20 +2,34 @@
 using projMaxPark.BL;
 using System;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace projMaxPark.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SmartAlgorythmController : ControllerBase
+    public class SmartAlgorithmController : ControllerBase
     {
-        //Daily algorithm 
-        [HttpGet("smartAlgorithm")]
-        public Object Get()
+        private readonly SmartAlgorithm _smartAlgorithm;
+
+        // Inject SmartAlgorithm through the constructor
+        public SmartAlgorithmController(SmartAlgorithm smartAlgorithm)
         {
-            SmartAlgorithm smartAlgorithm = new SmartAlgorithm();
-            return smartAlgorithm.GetDailyAlgorithm();
+            _smartAlgorithm = smartAlgorithm;
+        }
+
+        // Daily algorithm
+        [HttpGet("smartAlgorithm")]
+        public ActionResult<Object> Get()
+        {
+            try
+            {
+                var result = _smartAlgorithm.GetDailyAlgorithm();
+                return Ok(result); // Return a 200 OK response with the result
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional) and return a 500 Internal Server Error response
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

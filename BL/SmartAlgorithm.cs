@@ -8,12 +8,22 @@ namespace projMaxPark.BL
 {
     public class SmartAlgorithm
     {
+        private readonly NotificationService _notificationService;
+
+        public SmartAlgorithm(NotificationService notificationService)
+        {
+            _notificationService = notificationService;
+        }
 
         public Object GetDailyAlgorithm()
         {
-            //DBservicesSmartAlgorithm dbsRes = new DBservicesSmartAlgorithm();
-            //List<Reservation> reservationsList = new List<Reservation>();
-            //reservationsList = dbsRes.getTomorrowReservations_SmartAlgo();
+            //  DBservicesSmartAlgorithm dbsRes = new DBservicesSmartAlgorithm();
+            //   List<Reservation> reservationsList = new List<Reservation>();
+            //  reservationsList = dbsRes.getTomorrowReservations_SmartAlgo();
+            System.Console.WriteLine("GetDailyAlgorithm");
+
+            //_notificationService.SendNotification(6, "Test Tile", "body here");
+
 
             DBservicesReservation D=new DBservicesReservation();
             List<Reservation> reservationsList = new List<Reservation>();
@@ -60,7 +70,33 @@ namespace projMaxPark.BL
             }
 
             DBservicesSmartAlgorithm dbsObj = new DBservicesSmartAlgorithm();
-            return dbsObj.getUpdatedReservations();
+
+            var reservations = dbsObj.getUpdatedReservations() as List<object>; // Cast the returned object to List<object>
+
+            if (reservations == null || reservations.Count == 0)
+            {
+                // Handle case where no reservations were found
+                return reservations;
+            }
+
+            foreach (dynamic reservation in reservations)
+            {
+                // Use reflection or dynamic to access the properties of the reservation object
+                var userId = reservation.userId; // Get userId
+
+                // Send the notification
+                string title = "Your reservation has been updated";
+                string body = "Your reservation has been approved";
+
+
+                // Send notification to the actual userId
+                var result = _notificationService.SendNotification(userId, title, body);
+
+                // Optionally log the result
+                Console.WriteLine(result);
+            }
+
+            return reservations;
 
         }
 
